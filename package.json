@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+  "test": "npx playwright test",
+  "test:api": "npx playwright test tests/api.spec.ts"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -11,5 +14,7 @@
   "devDependencies": {
     "@playwright/test": "^1.60.0",
     "@types/node": "^25.9.1"
-  }
 }
+}
+
+
