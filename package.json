@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
   "test": "npx playwright test",
-  "test:api": "npx playwright test tests/api.spec.ts"
+  "test:api": "npx playwright test tests/api.spec.ts",
+  "mock:orders": "node mock-order-server.js"
   },
   "keywords": [],
   "author": "",
