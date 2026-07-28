@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-  "test": "npx playwright test",
-  "test:api": "npx playwright test tests/api.spec.ts",
-  "mock:orders": "node mock-order-server.js"
+    "test": "npx playwright test",
+    "test:api": "npx playwright test tests/api.spec.ts",
+    "mock:orders": "node mock-order-server.js",
+    "validate:sql": "node scripts/validate-orders-sql.js"
   },
   "keywords": [],
   "author": "",
@@ -15,7 +16,9 @@
   "devDependencies": {
     "@playwright/test": "^1.60.0",
     "@types/node": "^25.9.1"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "sql.js": "^1.14.1"
+  }
 }
-}
-
-
