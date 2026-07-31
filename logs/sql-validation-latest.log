@@ -1,0 +1,13 @@
+PASS: valid LIMIT order
+PASS: valid MARKET order
+PASS: LIMIT order must include limit_price
+PASS: quantity must be > 0
+PASS: symbol must be uppercase letters
+PASS: side must be BUY or SELL
+PASS: client_order_id must be unique
+Inserted valid rows: 2
+Inserted rows table:
+| order_id | account_id | symbol | side | quantity | order_type | limit_price | time_in_force | client_order_id | status | created_at          |
+|----------|------------|--------|------|----------|------------|-------------|---------------|-----------------|--------|---------------------|
+| 1        | ACC12345   | AAPL   | BUY  | 10       | LIMIT      | 170         | GTC           | PW-ORDER-001    | NEW    | 2026-07-29 17:12:31 |
+| 2        | ACC12345   | MSFT   | SELL | 5        | MARKET     | NULL        | DAY           | PW-ORDER-002    | NEW    | 2026-07-29 17:12:31 |

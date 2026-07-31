@@ -7,7 +7,8 @@
     "test": "npx playwright test",
     "test:api": "npx playwright test tests/api.spec.ts",
     "mock:orders": "node mock-order-server.js",
-    "validate:sql": "node scripts/validate-orders-sql.js"
+    "validate:sql": "node scripts/validate-orders-sql.js",
+    "status:orders": "node scripts/check-orders-status.js"
   },
   "keywords": [],
   "author": "",
