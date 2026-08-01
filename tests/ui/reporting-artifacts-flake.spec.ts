@@ -34,7 +34,7 @@ test.describe('Reporting artifacts and flake mitigation demo', () => {
 
     await test.step('Submit form with resilient locators', async () => {
       const nameInput = page.getByLabel('Full name');
-      const emailInput = page.getByPlaceholder('Enter your email');
+      const emailInput = page.getByLabel('Email');
       const submitButton = page.getByRole('button', { name: /submit/i });
 
       await expect(nameInput).toBeEditable();
@@ -80,7 +80,7 @@ test.describe('Reporting artifacts and flake mitigation demo', () => {
       await testInfo.attach('flake-mitigation-notes', {
         body: [
           'Applied retries at describe level (retries: 2).',
-          'Used resilient locators (role/label/placeholder).',
+          'Used resilient locators (role/label).',
           'Used expect.poll with timeout instead of fixed sleeps.',
           'Configured action and navigation timeouts.',
         ].join('\n'),

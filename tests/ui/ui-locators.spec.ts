@@ -9,7 +9,7 @@ test.describe('UI locators demo', () => {
     await expect(page.getByRole('heading', { name: 'UI Locators Demo' })).toBeVisible();
 
     await page.getByLabel('Full name').fill('Ranjini Kumar');
-    await page.getByPlaceholder('Enter your email').fill('ranjini@example.com');
+    await page.getByLabel('Email').fill('srkbommidi@example.com');
     await page.getByRole('button', { name: /submit/i }).click();
 
     await expect(page.locator('#confirmation')).toContainText('Thanks, Ranjini Kumar');
