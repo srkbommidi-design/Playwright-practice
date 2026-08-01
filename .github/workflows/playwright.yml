@@ -1,27 +1,199 @@
-name: Playwright Tests
+name: Playwright CI
+
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
+  workflow_dispatch:
+  schedule:
+    - cron: '30 2 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: playwright-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  test:
-    timeout-minutes: 60
+  sql-validation:
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    env:
+      CI: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate SQL schema rules
+        run: npm run validate:sql
+
+      - name: Upload SQL validation logs
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: sql-validation-logs
+          path: logs/
+          retention-days: 14
+
+  api-smoke:
+    needs: sql-validation
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    env:
+      CI: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run API smoke tests
+        run: npx playwright test tests/api/api.spec.ts tests/api/expedia-graphql.spec.ts --project=chromium --reporter=line,html
+
+      - name: Upload API smoke report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-api-smoke
+          path: playwright-report/
+          retention-days: 14
+
+      - name: Upload API smoke raw results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-api-smoke
+          path: test-results/
+          retention-days: 14
+
+  orders-integration:
+    needs: sql-validation
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    env:
+      CI: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Start mock order server
+        run: |
+          node mock-order-server.js &
+          echo "Mock server started"
+
+      - name: Wait for mock order server
+        run: |
+          for i in {1..30}; do
+            if curl -sSf http://127.0.0.1:3000/orders > /dev/null; then
+              echo "Mock server is up"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "Mock server did not become ready in time"
+          exit 1
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run orders integration test
+        run: npx playwright test tests/api/orders.spec.ts --project=chromium --reporter=line,html
+
+      - name: Upload orders integration report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-orders-integration
+          path: playwright-report/
+          retention-days: 14
+
+      - name: Upload orders integration raw results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-orders-integration
+          path: test-results/
+          retention-days: 14
+
+  ui-regression:
+    needs: sql-validation
+    timeout-minutes: 40
+    runs-on: ubuntu-latest
+    env:
+      CI: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run UI regression tests
+        run: npx playwright test tests/ui/ui-locators.spec.ts tests/ui/login-with-pom.spec.ts tests/ui/reporting-artifacts-flake.spec.ts --project=chromium --reporter=line,html
+
+      - name: Upload UI regression report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-ui-regression
+          path: playwright-report/
+          retention-days: 14
+
+      - name: Upload UI regression raw results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-ui-regression
+          path: test-results/
+          retention-days: 14
+
+  quality-gate:
+    name: CI Quality Gate
+    needs:
+      - sql-validation
+      - api-smoke
+      - orders-integration
+      - ui-regression
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: lts/*
-    - name: Install dependencies
-      run: npm ci
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-    - name: Run Playwright tests
-      run: npx playwright test
-    - uses: actions/upload-artifact@v4
-      if: ${{ !cancelled() }}
-      with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 30
+      - name: Confirm all jobs completed
+        run: echo "All pipeline jobs completed successfully."

@@ -6,6 +6,9 @@
   "scripts": {
     "test": "npx playwright test",
     "test:api": "npx playwright test tests/api.spec.ts",
+    "test:artifacts": "npx playwright test tests/ui/reporting-artifacts-flake.spec.ts",
+    "test:gmail:capture": "npx playwright test tests/ui/gmail-login-capture.spec.ts --project=chromium --headed",
+    "clean:reports": "powershell -Command \"Remove-Item -Recurse -Force .\\playwright-report, .\\test-results -ErrorAction SilentlyContinue\"",
     "mock:orders": "node mock-order-server.js",
     "validate:sql": "node scripts/validate-orders-sql.js",
     "status:orders": "node scripts/check-orders-status.js"

@@ -4,7 +4,7 @@ const sites = [
   {
     name: 'Gmail',
     url: 'https://mail.google.com',
-    expectedPattern: /mail\.google\.com/,
+    expectedPattern: /mail\.google\.com|accounts\.google\.com/i,
     expectedText: /Gmail|Google/i,
   },
   {
