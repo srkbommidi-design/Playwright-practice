@@ -12,5 +12,21 @@ Practice project built to learn and demonstrate Playwright with TypeScript.
 - Playwright config setup
 - GitHub Actions workflow
 
+## CI Pipeline
+- Workflow file: .github/workflows/playwright.yml
+- Triggers: push, pull request, manual dispatch, nightly schedule
+- Split jobs:
+	- sql-validation
+	- api-smoke
+	- api-external-monitor (non-blocking external endpoint monitor)
+	- orders-integration
+	- ui-regression
+	- quality-gate
+- Artifacts uploaded per job: playwright-report-* and test-results-*
+
+Run locally before pushing:
+- npm run validate:sql
+- npm test
+
 ## Status
 In progress — actively expanding test coverage and framework structure.

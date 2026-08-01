@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UI Locators Demo</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 2rem; }
+      form { display: grid; gap: 0.75rem; max-width: 320px; }
+      .hidden { display: none; }
+    </style>
+  </head>
+  <body>
+    <h1>UI Locators Demo</h1>
+    <form>
+      <label for="name">Full name</label>
+      <input id="name" name="name" type="text" aria-label="Full name" />
+
+      <label for="email">Email</label>
+      <input id="email" name="email" type="text" placeholder="srkbommidi@gmail.com" />
+
+      <button type="button" onclick="document.getElementById('confirmation').classList.remove('hidden'); document.getElementById('confirmation').textContent = 'Thanks, ' + document.getElementById('name').value;">Submit</button>
+    </form>
+
+    <div id="confirmation" class="hidden" aria-live="polite"></div>
+  </body>
+</html>

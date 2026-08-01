@@ -1,0 +1,12 @@
+{
+  "order": {
+    "accountId": "ACC12345",
+    "symbol": "AAPL",
+    "side": "BUY",
+    "quantity": 10,
+    "orderType": "LIMIT",
+    "limitPrice": 170.00,
+    "timeInForce": "GTC",
+    "clientOrderId": "PW-ORDER-001"
+  }
+}
