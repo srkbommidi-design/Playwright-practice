@@ -69,7 +69,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run API smoke tests
-        run: npx playwright test tests/api/api.spec.ts tests/api/expedia-graphql.spec.ts --project=chromium --reporter=line,html
+        run: npx playwright test tests/api/api.spec.ts --project=chromium --reporter=line,html
 
       - name: Upload API smoke report
         if: ${{ always() }}
@@ -84,6 +84,48 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: test-results-api-smoke
+          path: test-results/
+          retention-days: 14
+
+  api-external-monitor:
+    needs: sql-validation
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    env:
+      CI: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run external API monitor tests
+        run: npx playwright test tests/api/expedia-graphql.spec.ts --project=chromium --reporter=line,html
+
+      - name: Upload external API monitor report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-api-external-monitor
+          path: playwright-report/
+          retention-days: 14
+
+      - name: Upload external API monitor raw results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-api-external-monitor
           path: test-results/
           retention-days: 14
 

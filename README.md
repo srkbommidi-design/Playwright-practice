@@ -18,6 +18,7 @@ Practice project built to learn and demonstrate Playwright with TypeScript.
 - Split jobs:
 	- sql-validation
 	- api-smoke
+	- api-external-monitor (non-blocking external endpoint monitor)
 	- orders-integration
 	- ui-regression
 	- quality-gate
